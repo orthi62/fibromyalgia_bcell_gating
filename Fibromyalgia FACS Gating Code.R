@@ -528,38 +528,13 @@ ggcyto(BMD1_auto_gs[[50]],aes(x="BV786-A", y= "BV421-A"),subset="CD38+CD27-")+ g
 
 
 
-#obtain FCS files for each gating population
+# Obtain FCS files for each gating population for further analysis. Here I have exported the B_cell_gate population to perform dimensionality reduction in order to compare it to the manual gating data.
 
-B3_cell_gate <- cytoset_to_flowSet(gs_pop_get_data(BMD3_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+"))
-naive_gate <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27-"))
-unswitched_memory <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27+"))
-switched_memory <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD-CD27+"))
-AtBc <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD-CD27-"))
-plasmablast_unswitched <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27+/CD38+p"))
-nonpb_unswitched <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27+/CD38-p"))
-plasmablast_switched <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD-CD27+/CD38+"))
-nonpb_switched <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD-CD27+/CD38-"))
-naive_trans <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27-/CD10+"))
-naive_nontrans <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27-/CD10-"))
-naive_anergic <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD+CD27-/CD10-/CD21+"))
-AtBc_activated <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+/IgD-CD27-/CD38+CD27-"))
-
-write.flowSet(B3_cell_gate, filename = "B_Cell.fcs", outdir = "/Users/orthi/Documents/B_cell_3" )
-write.flowSet(naive_gate, filename = "B_Naive.fcs", outdir = "/Users/orthi/Documents/B_Naive")
-write.flowSet(unswitched_memory, filename = "B_Unswitched.fcs", outdir = "/Users/orthi/Documents/B_Unswitched" )
-write.flowSet(switched_memory, filename = "B_Switched.fcs", outdir = "/Users/orthi/Documents/B_switched" )
-write.flowSet(AtBc, filename = "B_Atbc.fcs", outdir = "/Users/orthi/Documents/B_Atbc" )
-write.flowSet(plasmablast_switched, filename = "B_pbswitch.fcs", outdir = "/Users/orthi/Documents/B_pbswitch" )
-write.flowSet(plasmablast_unswitched, filename = "B_pbunswitch.fcs", outdir = "/Users/orthi/Documents/B_pbunswitch" )
-write.flowSet(nonpb_switched, filename = "B_nonpbswitch.fcs", outdir = "/Users/orthi/Documents/B_nonpbswitch" )
-write.flowSet(nonpb_unswitched, filename = "B_nonpbunswitch.fcs", outdir = "/Users/orthi/Documents/B_nonpbunswitch")
-write.flowSet(naive_trans, filename = "B_Trans.fcs", outdir = "/Users/orthi/Documents/B_Trans" )
-write.flowSet(naive_nontrans, filename = "B_NonTrans.fcs", outdir = "/Users/orthi/Documents/B_NonTrans" )
-write.flowSet(naive_anergic, filename = "B_Anergic.fcs", outdir = "/Users/orthi/Documents/B_Anergic" )
-write.flowSet(AtBc_activated, filename = "B_AtBc_active.fcs", outdir = "/Users/orthi/Documents/B_AtBc_active" )
+B_cell_gate <- cytoset_to_flowSet(gs_pop_get_data(BMD1_auto_gs, "/Non Debris/Singlets/CD3-CD56-/CD19+"))
+write.flowSet(B_cell_gate, filename = "B_Cell.fcs", outdir = "/Users/orthi/Documents/B_cell" )
 
 
-names <- read.table("/Users/orthi/Documents/B_cell_3/annotation.txt")
+names <- read.table("/Users/orthi/Documents/B_cell/annotation.txt")
 names
 class(names[1,1])
 
@@ -570,8 +545,6 @@ pre_name <- names[,2]
 new_name <- names[,3]
 curr_dir <- getwd()
 
-#Repeat the following code for every flowFrame folder created.
-
 setwd("/Users/orthi/Documents/B_cell_3")
 list.files()
 file.rename(from = pre_name, to = new_name)
@@ -580,24 +553,15 @@ list.files()
 setwd(curr_dir)
 
 
-#PROPORTIONS
-
-x <- gs_pop_get_stats(BMD1_auto_gs)
-class(x)
-
-y <- x[946:1386]
 
 
 
+#TROUBLESHOOTING
 
-#Using ggplot to check if sth wrong with ggcyto
+# The dataset can be checked for negative values and these values can be removed manually without using auto QC using different methods.
+# One of these methods is shown below. However, the use of auto QC is recommended for an overall cleaner dataset.
 
-BMD1_matrix <- exprs(BMD1_flowset[[33]])
-BMD1_dataframe <- as.data.frame(BMD1_matrix)
-
-ggplot(BMD1_dataframe, aes(x = BMD1_dataframe$`FSC-A`, y = BMD1_dataframe$`SSC-A`)) + geom_hex(bins = 256) + scale_fill_distiller(palette = "Spectral")
-
-#Test negative values in dataset
+#TESTING FOR NEGATIVE VALUES
 
 BMD1_matrix <- exprs(BMD1_flowset[[46]])
 
@@ -632,12 +596,7 @@ BMD1_fs46_allpos <- DFtoFF(BMD1_df46_allpos)
 ggcyto(BMD1_fs46_allpos, aes(x="FSC-A", y = "SSC-A")) + geom_hex(bins=2000)+ ggcyto_par_set(limits = list(x = c(0, 1e+05), y= c(0, 1e+05)))
 
 
-#remove doublets
-
-RemoveDoublets(BMD1_compensated, channel1="FSC-A", channel2="FSC-H", nmad=4,
-               verbose=FALSE, output="frame")
-
-#If we need to converge multiple flowSets use:
+#To converge/pool multiple existing flowsets into one:
 
 list_1 <- flowSet_to_list(B_cell_gate)
 list_2 <- flowSet_to_list(B2_cell_gate)
@@ -650,7 +609,7 @@ BMD_B_cell <- as(large_list, "flowSet")
 class(BMD_combined)
 
 
-#SAVING GATING SETS
+#SAVING GATING SET OBJECTS
 
 save_gs(objectname, path = "where to save")
 
