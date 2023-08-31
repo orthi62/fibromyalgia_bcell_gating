@@ -76,14 +76,14 @@ sampleNames(comp_controlfs)
 pData(comp_controlfs)
 
 
-#name the flowframes in the list to order
+#Name the flowframes in the list to order
 
 names(comp_control) <- c("APC-A", "APC-Cy7-A", "BB515-A", "BUV395-A", "BUV661-A", "BUV737-A", "BV421-A", "BV605-A", "BV650-A", "BV711-A", "BV786-A", "PE-A", "PE-CF594-A", "PE-Cy7-A", "PerCP-A", "UNSTAINED")
 
 class(comp_control) 
 #returns a list
 
-#convert list to flowset
+#Convert list to flowset
 
 comp_controlfs <- as(comp_control, "flowSet")
 comp_controlfs
