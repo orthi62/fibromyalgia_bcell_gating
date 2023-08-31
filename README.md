@@ -1,1 +1,1 @@
-# fibromyalgia_facs_gating
+# Fibromyalgia_FACS_Gating
